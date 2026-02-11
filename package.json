@@ -1,0 +1,25 @@
+{
+  "name": "neoai-backend",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^3.0.24",
+    "ai": "^6.0.79",
+    "drizzle-orm": "^0.45.1",
+    "nuxt": "^4.3.1",
+    "postgres": "^3.4.8",
+    "remove-markdown": "^0.6.3",
+    "vue": "^3.5.28",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.9"
+  }
+}
