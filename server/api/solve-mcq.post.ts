@@ -71,6 +71,12 @@ export default defineEventHandler(async (event) => {
         throw new Error('No JSON found in response')
       }
       result = JSON.parse(jsonMatch[0])
+
+      // Ensure selectedOption is consistent with answer index
+      // The AI sometimes returns mismatched answer/selectedOption values
+      if (result.answer >= 1 && result.answer <= options.length) {
+        result.selectedOption = options[result.answer - 1]
+      }
     } catch (parseError) {
       console.error('[solve-mcq] Failed to parse AI response:', text)
       throw createError({
