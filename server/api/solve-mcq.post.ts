@@ -1,6 +1,6 @@
 import { generateText } from 'ai'
 import { callWithKeyRotation, MODEL } from '~~/server/utils/ai/google'
-import { stripMarkdown } from '~~/server/utils/ai/markdown'
+import { stripMarkdown, extractJSON } from '~~/server/utils/ai/markdown'
 import { generateMCQCacheKey, lookupMCQCache, saveMCQCache } from '~~/server/utils/ai/cache'
 import { buildMCQPrompt, MCQ_SYSTEM_PROMPT } from '~~/server/utils/prompts/mcq'
 
@@ -54,7 +54,7 @@ export default defineEventHandler(async (event) => {
     // Parse AI response
     let result: { answer: number; selectedOption: string; explanation: string; confidence: number }
     try {
-      const cleaned = stripMarkdown(text)
+      const cleaned = extractJSON(text)
       const jsonMatch = cleaned.match(/\{[\s\S]*\}/)
       if (!jsonMatch) {
         throw new Error('No JSON found in response')
