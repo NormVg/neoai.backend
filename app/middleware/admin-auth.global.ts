@@ -4,11 +4,12 @@ export default defineNuxtRouteMiddleware((to) => {
     return
   }
 
-  // Client-side: check localStorage for admin token
-  if (import.meta.client) {
-    const token = localStorage.getItem('admin_token')
-    if (!token) {
-      return navigateTo('/admin/login')
-    }
+  const { token, loadToken } = useAdminAuth()
+
+  // Load token from localStorage on client
+  loadToken()
+
+  if (!token.value) {
+    return navigateTo('/admin/login', { replace: true })
   }
 })

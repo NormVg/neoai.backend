@@ -1,5 +1,5 @@
 <template>
-  <div v-if="authenticated" class="admin-page">
+  <div class="admin-page">
     <header class="admin-header">
       <div class="header-left">
         <NuxtLink to="/" class="back-link">
@@ -186,24 +186,19 @@ interface Pagination {
 }
 
 // Auth
-const authenticated = ref(false)
-const adminToken = ref<string | null>(null)
-
-function getAuthHeaders(): HeadersInit {
-  return adminToken.value ? { Authorization: `Bearer ${adminToken.value}` } : {}
-}
+const { token: adminToken, getAuthHeaders, clearToken } = useAdminAuth()
 
 function handleAuthError(err: any) {
   const status = err?.response?.status || err?.statusCode
   if (status === 401 || status === 403) {
-    localStorage.removeItem('admin_token')
-    navigateTo('/admin/login')
+    clearToken()
+    navigateTo('/admin/login', { replace: true })
   }
 }
 
 function logout() {
-  localStorage.removeItem('admin_token')
-  navigateTo('/admin/login')
+  clearToken()
+  navigateTo('/admin/login', { replace: true })
 }
 
 const activeTab = ref<'mcq' | 'code'>('mcq')
@@ -469,12 +464,8 @@ watch(activeTab, (tab) => {
   else fetchCode(1)
 })
 
-// Initial load (middleware already guards access)
+// Initial load (middleware guards access)
 onMounted(() => {
-  const token = localStorage.getItem('admin_token')
-  if (!token) return
-  adminToken.value = token
-  authenticated.value = true
   fetchStats()
   fetchApiKeys()
   fetchMcq(1)

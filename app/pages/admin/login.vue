@@ -50,6 +50,8 @@
 </template>
 
 <script setup lang="ts">
+const { token, setToken } = useAdminAuth()
+
 const username = ref('')
 const password = ref('')
 const error = ref('')
@@ -57,9 +59,8 @@ const submitting = ref(false)
 
 // If already authenticated, redirect to admin
 onMounted(() => {
-  const token = localStorage.getItem('admin_token')
-  if (token) {
-    navigateTo('/admin')
+  if (token.value) {
+    navigateTo('/admin', { replace: true })
   }
 })
 
@@ -74,8 +75,8 @@ async function handleLogin() {
     })
 
     if (data.token) {
-      localStorage.setItem('admin_token', data.token)
-      navigateTo('/admin')
+      setToken(data.token)
+      navigateTo('/admin', { replace: true })
     }
   } catch (err: any) {
     const status = err?.response?.status || err?.statusCode
