@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    // Private (server-only) keys - populated from .env
+    // Fallback API keys from env (used only if no keys in DB)
     googleApiKey1: process.env.GOOGLE_GENERATIVE_AI_API_KEY || '',
     googleApiKey2: process.env.GOOGLE_GENERATIVE_AI_API_KEY_2 || '',
     googleApiKey3: process.env.GOOGLE_GENERATIVE_AI_API_KEY_3 || '',

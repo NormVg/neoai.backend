@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, jsonb, integer, real, timestamp, index } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, jsonb, integer, real, timestamp, boolean, index } from 'drizzle-orm/pg-core'
 
 // MCQ Response Cache Table
 export const mcqCache = pgTable('mcq_cache', {
@@ -49,3 +49,12 @@ export const codeCache = pgTable('code_cache', {
 }, (table) => [
   index('code_cache_key_idx').on(table.cacheKey),
 ])
+
+// API Keys Table — managed from admin panel, used for Gemini key rotation
+export const apiKeys = pgTable('api_keys', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  label: text('label').notNull(), // friendly name, e.g. "Key 1", "Vishnu personal"
+  key: text('key').notNull().unique(), // the actual Google API key
+  active: boolean('active').default(true).notNull(), // toggle on/off without deleting
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})

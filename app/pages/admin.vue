@@ -17,7 +17,17 @@
       </button>
     </header>
 
-    <AdminStats :stats="stats" :loading="statsLoading" />
+    <AdminStats :stats="stats" :loading="statsLoading" :activeKeys="apiKeys.filter(k => k.active).length" :totalKeys="apiKeys.length" />
+
+    <AdminKeysTable
+      :keys="apiKeys"
+      :loading="keysLoading"
+      :adding="addingKey"
+      :toggling="togglingKey"
+      @add="addApiKey"
+      @toggle="toggleApiKey"
+      @delete="openDeleteKey"
+    />
 
     <div class="tabs">
       <button
@@ -120,6 +130,14 @@
 </template>
 
 <script setup lang="ts">
+interface ApiKeyEntry {
+  id: string
+  label: string
+  key: string
+  active: boolean
+  createdAt: string
+}
+
 interface MCQEntry {
   id: string
   question: string
@@ -166,9 +184,15 @@ const statsLoading = ref(false)
 const saving = ref(false)
 const deleting = ref(false)
 
+// API Keys state
+const apiKeys = ref<ApiKeyEntry[]>([])
+const keysLoading = ref(false)
+const addingKey = ref(false)
+const togglingKey = ref<string | null>(null)
+
 const editingMcq = ref<MCQEntry | null>(null)
 const editingCode = ref<CodeEntry | null>(null)
-const deletingEntry = ref<{ id: string; type: 'mcq' | 'code'; question: string } | null>(null)
+const deletingEntry = ref<{ id: string; type: 'mcq' | 'code' | 'key'; question: string } | null>(null)
 
 const toast = ref({ show: false, message: '', type: 'success' as 'success' | 'error' })
 
@@ -252,8 +276,58 @@ function goToPage(page: number) {
 
 function refreshAll() {
   fetchStats()
+  fetchApiKeys()
   fetchMcq(1)
   fetchCode(1)
+}
+
+// API Keys handlers
+async function fetchApiKeys() {
+  keysLoading.value = true
+  try {
+    const data = await $fetch<{ keys: ApiKeyEntry[]; total: number }>('/api/admin/keys')
+    apiKeys.value = data.keys
+  } catch {
+    showToast('Failed to fetch API keys', 'error')
+  }
+  keysLoading.value = false
+}
+
+async function addApiKey(payload: { label: string; key: string }) {
+  addingKey.value = true
+  try {
+    await $fetch('/api/admin/keys', {
+      method: 'POST',
+      body: payload,
+    })
+    showToast('API key added')
+    fetchApiKeys()
+    fetchStats()
+  } catch (error: any) {
+    const msg = error?.data?.message || 'Failed to add API key'
+    showToast(msg, 'error')
+  }
+  addingKey.value = false
+}
+
+async function toggleApiKey(key: ApiKeyEntry) {
+  togglingKey.value = key.id
+  try {
+    await $fetch(`/api/admin/keys/${key.id}`, {
+      method: 'PUT',
+      body: { active: !key.active },
+    })
+    showToast(`Key "${key.label}" ${key.active ? 'disabled' : 'enabled'}`)
+    fetchApiKeys()
+    fetchStats()
+  } catch {
+    showToast('Failed to update key', 'error')
+  }
+  togglingKey.value = null
+}
+
+function openDeleteKey(key: ApiKeyEntry) {
+  deletingEntry.value = { id: key.id, type: 'key' as any, question: `API Key: ${key.label}` }
 }
 
 // Edit handlers
@@ -313,11 +387,18 @@ async function confirmDelete() {
   deleting.value = true
   const { id, type } = deletingEntry.value
   try {
-    await $fetch(`/api/admin/${type}/${id}`, { method: 'DELETE' })
-    showToast(`${type.toUpperCase()} entry deleted`)
-    deletingEntry.value = null
-    if (type === 'mcq') fetchMcq(mcqData.value.pagination.page)
-    else fetchCode(codeData.value.pagination.page)
+    if (type === 'key') {
+      await $fetch(`/api/admin/keys/${id}`, { method: 'DELETE' })
+      showToast('API key deleted')
+      deletingEntry.value = null
+      fetchApiKeys()
+    } else {
+      await $fetch(`/api/admin/${type}/${id}`, { method: 'DELETE' })
+      showToast(`${type.toUpperCase()} entry deleted`)
+      deletingEntry.value = null
+      if (type === 'mcq') fetchMcq(mcqData.value.pagination.page)
+      else fetchCode(codeData.value.pagination.page)
+    }
     fetchStats()
   } catch {
     showToast('Failed to delete entry', 'error')
@@ -340,6 +421,7 @@ watch(activeTab, (tab) => {
 // Initial load
 onMounted(() => {
   fetchStats()
+  fetchApiKeys()
   fetchMcq(1)
   fetchCode(1)
 })

@@ -1,6 +1,11 @@
 <template>
   <div class="stats-grid">
     <div class="stat-card">
+      <div class="stat-label">API Keys</div>
+      <div class="stat-value">{{ activeKeys }}</div>
+      <div class="stat-sub">{{ totalKeys }} total / {{ activeKeys }} active</div>
+    </div>
+    <div class="stat-card">
       <div class="stat-label">MCQ Cached</div>
       <div class="stat-value">{{ loading ? '-' : stats?.mcq?.totalCachedQuestions ?? 0 }}</div>
       <div class="stat-sub">{{ stats?.mcq?.totalCacheHits ?? 0 }} total hits</div>
@@ -15,11 +20,6 @@
       <div class="stat-value">{{ loading ? '-' : stats?.mcq?.averageHitsPerQuestion ?? 0 }}</div>
       <div class="stat-sub">per question</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">Code Avg Hits</div>
-      <div class="stat-value">{{ loading ? '-' : stats?.code?.averageHitsPerQuestion ?? 0 }}</div>
-      <div class="stat-sub">per question</div>
-    </div>
   </div>
 </template>
 
@@ -27,6 +27,8 @@
 defineProps<{
   stats: any
   loading: boolean
+  activeKeys: number
+  totalKeys: number
 }>()
 </script>
 
