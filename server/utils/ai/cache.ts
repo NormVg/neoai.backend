@@ -55,10 +55,10 @@ export async function lookupMCQCache(cacheKey: string) {
     db.update(schema.mcqCache)
       .set({
         requestCount: sql`${schema.mcqCache.requestCount} + 1`,
-        lastAccessed: new Date(),
+        lastAccessed: sql`now()`,
       })
       .where(eq(schema.mcqCache.id, cached.id))
-      .then(() => {})
+      .execute()
       .catch((err) => console.error('[cache] Failed to update MCQ hit count:', err))
 
     console.log(`[cache] MCQ hit (key: ${cacheKey.slice(0, 8)}..., accessed ${cached.requestCount + 1} times)`)
@@ -96,10 +96,10 @@ export async function lookupCodeCache(cacheKey: string) {
     db.update(schema.codeCache)
       .set({
         requestCount: sql`${schema.codeCache.requestCount} + 1`,
-        lastAccessed: new Date(),
+        lastAccessed: sql`now()`,
       })
       .where(eq(schema.codeCache.id, cached.id))
-      .then(() => {})
+      .execute()
       .catch((err) => console.error('[cache] Failed to update Code hit count:', err))
 
     console.log(`[cache] Code hit (key: ${cacheKey.slice(0, 8)}..., accessed ${cached.requestCount + 1} times)`)

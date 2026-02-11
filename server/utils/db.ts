@@ -16,6 +16,8 @@ export function getDatabase() {
     // Create postgres client (prepare: false required for Supabase pgbouncer)
     const client = postgres(connectionString, {
       prepare: false,
+      idle_timeout: 20,
+      connect_timeout: 10,
     })
 
     db = drizzle(client, { schema })

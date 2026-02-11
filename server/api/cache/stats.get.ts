@@ -55,13 +55,13 @@ export default defineEventHandler(async () => {
       mcq: {
         totalCachedQuestions: mcqStats[0]?.totalEntries ?? 0,
         totalCacheHits: mcqStats[0]?.totalRequests ?? 0,
-        averageHitsPerQuestion: Number((mcqStats[0]?.avgRequestsPerEntry ?? 0).toFixed(2)),
+        averageHitsPerQuestion: Number(Number(mcqStats[0]?.avgRequestsPerEntry ?? 0).toFixed(2)),
         topQuestions: topMCQs,
       },
       code: {
         totalCachedQuestions: codeStats[0]?.totalEntries ?? 0,
         totalCacheHits: codeStats[0]?.totalRequests ?? 0,
-        averageHitsPerQuestion: Number((codeStats[0]?.avgRequestsPerEntry ?? 0).toFixed(2)),
+        averageHitsPerQuestion: Number(Number(codeStats[0]?.avgRequestsPerEntry ?? 0).toFixed(2)),
         topQuestions: topCodeQuestions,
       },
     }
