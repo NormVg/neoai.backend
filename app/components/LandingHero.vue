@@ -1,5 +1,13 @@
 <template>
   <div>
+    <NuxtLink to="/login" class="signin-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+      Sign in
+    </NuxtLink>
+
     <span class="badge">&#9679; Online</span>
     <h1>NeoAI</h1>
     <p class="subtitle">AI exam assistant for iamneo</p>
@@ -23,6 +31,31 @@
 </template>
 
 <style scoped>
+.signin-link {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 0.5rem;
+  color: #999;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.signin-link:hover {
+  background: #fff;
+  border-color: #fff;
+  color: #000;
+}
+
 .badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
