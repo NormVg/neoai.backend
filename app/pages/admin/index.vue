@@ -468,14 +468,9 @@ watch(activeTab, (tab) => {
   else fetchCode(1)
 })
 
-// Auth check + initial load
+// Initial load (middleware already guards access)
 onMounted(() => {
-  const token = localStorage.getItem('admin_token')
-  if (!token) {
-    navigateTo('/admin/login')
-    return
-  }
-  adminToken.value = token
+  adminToken.value = localStorage.getItem('admin_token')
   fetchStats()
   fetchApiKeys()
   fetchMcq(1)
