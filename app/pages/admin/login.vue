@@ -94,11 +94,14 @@ async function handleLogin() {
 
 <style scoped>
 .login-page {
-  min-height: 100vh;
+  position: fixed;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  background: #000;
+  z-index: 100;
 }
 
 .login-card {

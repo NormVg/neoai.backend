@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-page">
+  <div v-if="authenticated" class="admin-page">
     <header class="admin-header">
       <div class="header-left">
         <NuxtLink to="/" class="back-link">
@@ -186,6 +186,7 @@ interface Pagination {
 }
 
 // Auth
+const authenticated = ref(false)
 const adminToken = ref<string | null>(null)
 
 function getAuthHeaders(): HeadersInit {
@@ -470,7 +471,10 @@ watch(activeTab, (tab) => {
 
 // Initial load (middleware already guards access)
 onMounted(() => {
-  adminToken.value = localStorage.getItem('admin_token')
+  const token = localStorage.getItem('admin_token')
+  if (!token) return
+  adminToken.value = token
+  authenticated.value = true
   fetchStats()
   fetchApiKeys()
   fetchMcq(1)
