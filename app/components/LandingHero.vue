@@ -1,6 +1,13 @@
 <template>
   <div>
-    <NuxtLink to="/login" class="signin-link">
+    <NuxtLink v-if="isLoggedIn" to="/profile" class="signin-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+      {{ username }}
+    </NuxtLink>
+    <NuxtLink v-else to="/login" class="signin-link">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
         <circle cx="12" cy="7" r="4" />
@@ -29,6 +36,16 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const { userInfo, isLoggedIn, loadToken } = useUserAuth()
+
+onMounted(() => {
+  loadToken()
+})
+
+const username = computed(() => userInfo.value?.username || 'Profile')
+</script>
 
 <style scoped>
 .signin-link {

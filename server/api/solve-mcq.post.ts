@@ -3,6 +3,7 @@ import { callWithKeyRotation, MODEL } from '~~/server/utils/ai/google'
 import { stripMarkdown, extractJSON } from '~~/server/utils/ai/markdown'
 import { generateMCQCacheKey, lookupMCQCache, saveMCQCache } from '~~/server/utils/ai/cache'
 import { buildMCQPrompt, MCQ_SYSTEM_PROMPT } from '~~/server/utils/prompts/mcq'
+import { extractToken, verifyToken } from '~~/server/utils/auth/jwt'
 
 /**
  * POST /api/solve-mcq
@@ -12,6 +13,16 @@ import { buildMCQPrompt, MCQ_SYSTEM_PROMPT } from '~~/server/utils/prompts/mcq'
  */
 export default defineEventHandler(async (event) => {
   try {
+    // Auth gate — require valid user token
+    const token = extractToken(event)
+    if (!token) {
+      throw createError({ statusCode: 401, message: 'Authentication required' })
+    }
+    const payload = await verifyToken(token)
+    if (!payload) {
+      throw createError({ statusCode: 401, message: 'Invalid or expired token' })
+    }
+
     const body = await readBody(event)
     const { question, options, code } = body
 

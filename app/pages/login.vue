@@ -63,6 +63,7 @@
 </template>
 
 <script setup lang="ts">
+const { setToken, loadToken, isLoggedIn } = useUserAuth()
 const isRegister = ref(false)
 const username = ref('')
 const password = ref('')
@@ -87,9 +88,8 @@ async function handleSubmit() {
     })
 
     if (data.token) {
-      localStorage.setItem('user_token', data.token)
-      localStorage.setItem('user_info', JSON.stringify(data.user))
-      navigateTo('/', { replace: true })
+      setToken(data.token, data.user)
+      navigateTo('/profile', { replace: true })
     }
   } catch (err: any) {
     const status = err?.response?.status || err?.statusCode
@@ -109,11 +109,11 @@ async function handleSubmit() {
   submitting.value = false
 }
 
-// If already logged in, redirect home
+// If already logged in, redirect to profile
 onMounted(() => {
-  const token = localStorage.getItem('user_token')
-  if (token) {
-    navigateTo('/', { replace: true })
+  loadToken()
+  if (isLoggedIn.value) {
+    navigateTo('/profile', { replace: true })
   }
 })
 </script>
