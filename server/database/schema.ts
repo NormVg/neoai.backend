@@ -58,3 +58,13 @@ export const apiKeys = pgTable('api_keys', {
   active: boolean('active').default(true).notNull(), // toggle on/off without deleting
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
+
+// Users Table — extension users with username/password auth
+export const users = pgTable('users', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  username: text('username').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  index('users_username_idx').on(table.username),
+])

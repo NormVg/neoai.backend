@@ -16,6 +16,13 @@ export default defineNuxtConfig({
     googleApiKey5: process.env.GOOGLE_GENERATIVE_AI_API_KEY_5 || '',
     databaseUrl: process.env.DATABASE_URL || '',
 
+    // Admin credentials (single hardcoded admin account)
+    adminUsername: process.env.ADMIN_USERNAME || 'admin',
+    adminPassword: process.env.ADMIN_PASSWORD || '',
+
+    // JWT secret for signing auth tokens
+    jwtSecret: process.env.JWT_SECRET || '',
+
     public: {
       // Public keys (client-accessible) - none needed for now
     },

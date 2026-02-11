@@ -10,11 +10,19 @@
         <h1>Admin</h1>
         <span class="badge">Cache Manager</span>
       </div>
-      <button class="btn-icon" @click="refreshAll" :disabled="loading">
-        <svg :class="{ spinning: loading }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-          <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16" />
-        </svg>
-      </button>
+      <div class="header-right">
+        <button class="btn-icon" @click="refreshAll" :disabled="loading">
+          <svg :class="{ spinning: loading }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16" />
+          </svg>
+        </button>
+        <button class="btn-logout" @click="logout">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+          </svg>
+          Logout
+        </button>
+      </div>
     </header>
 
     <AdminStats :stats="stats" :loading="statsLoading" :activeKeys="apiKeys.filter(k => k.active).length" :totalKeys="apiKeys.length" />
@@ -177,6 +185,26 @@ interface Pagination {
   totalPages: number
 }
 
+// Auth
+const adminToken = ref<string | null>(null)
+
+function getAuthHeaders(): HeadersInit {
+  return adminToken.value ? { Authorization: `Bearer ${adminToken.value}` } : {}
+}
+
+function handleAuthError(err: any) {
+  const status = err?.response?.status || err?.statusCode
+  if (status === 401 || status === 403) {
+    localStorage.removeItem('admin_token')
+    navigateTo('/admin/login')
+  }
+}
+
+function logout() {
+  localStorage.removeItem('admin_token')
+  navigateTo('/admin/login')
+}
+
 const activeTab = ref<'mcq' | 'code'>('mcq')
 const searchQuery = ref('')
 const loading = ref(false)
@@ -248,9 +276,11 @@ async function fetchMcq(page = 1) {
   try {
     const data = await $fetch<{ entries: MCQEntry[]; pagination: Pagination }>('/api/admin/mcq', {
       query: { page, limit: 20, search: searchQuery.value },
+      headers: getAuthHeaders(),
     })
     mcqData.value = data
-  } catch {
+  } catch (err) {
+    handleAuthError(err)
     showToast('Failed to fetch MCQ data', 'error')
   }
   loading.value = false
@@ -261,9 +291,11 @@ async function fetchCode(page = 1) {
   try {
     const data = await $fetch<{ entries: CodeEntry[]; pagination: Pagination }>('/api/admin/code', {
       query: { page, limit: 20, search: searchQuery.value },
+      headers: getAuthHeaders(),
     })
     codeData.value = data
-  } catch {
+  } catch (err) {
+    handleAuthError(err)
     showToast('Failed to fetch Code data', 'error')
   }
   loading.value = false
@@ -285,9 +317,12 @@ function refreshAll() {
 async function fetchApiKeys() {
   keysLoading.value = true
   try {
-    const data = await $fetch<{ keys: ApiKeyEntry[]; total: number }>('/api/admin/keys')
+    const data = await $fetch<{ keys: ApiKeyEntry[]; total: number }>('/api/admin/keys', {
+      headers: getAuthHeaders(),
+    })
     apiKeys.value = data.keys
-  } catch {
+  } catch (err) {
+    handleAuthError(err)
     showToast('Failed to fetch API keys', 'error')
   }
   keysLoading.value = false
@@ -299,11 +334,13 @@ async function addApiKey(payload: { label: string; key: string }) {
     await $fetch('/api/admin/keys', {
       method: 'POST',
       body: payload,
+      headers: getAuthHeaders(),
     })
     showToast('API key added')
     fetchApiKeys()
     fetchStats()
   } catch (error: any) {
+    handleAuthError(error)
     const msg = error?.data?.message || 'Failed to add API key'
     showToast(msg, 'error')
   }
@@ -316,11 +353,13 @@ async function toggleApiKey(key: ApiKeyEntry) {
     await $fetch(`/api/admin/keys/${key.id}`, {
       method: 'PUT',
       body: { active: !key.active },
+      headers: getAuthHeaders(),
     })
     showToast(`Key "${key.label}" ${key.active ? 'disabled' : 'enabled'}`)
     fetchApiKeys()
     fetchStats()
-  } catch {
+  } catch (err) {
+    handleAuthError(err)
     showToast('Failed to update key', 'error')
   }
   togglingKey.value = null
@@ -346,11 +385,13 @@ async function saveMcq(data: Partial<MCQEntry>) {
     await $fetch(`/api/admin/mcq/${editingMcq.value.id}`, {
       method: 'PUT',
       body: data,
+      headers: getAuthHeaders(),
     })
     showToast('MCQ entry updated')
     editingMcq.value = null
     fetchMcq(mcqData.value.pagination.page)
-  } catch {
+  } catch (err) {
+    handleAuthError(err)
     showToast('Failed to update entry', 'error')
   }
   saving.value = false
@@ -363,11 +404,13 @@ async function saveCode(data: Partial<CodeEntry>) {
     await $fetch(`/api/admin/code/${editingCode.value.id}`, {
       method: 'PUT',
       body: data,
+      headers: getAuthHeaders(),
     })
     showToast('Code entry updated')
     editingCode.value = null
     fetchCode(codeData.value.pagination.page)
-  } catch {
+  } catch (err) {
+    handleAuthError(err)
     showToast('Failed to update entry', 'error')
   }
   saving.value = false
@@ -388,19 +431,26 @@ async function confirmDelete() {
   const { id, type } = deletingEntry.value
   try {
     if (type === 'key') {
-      await $fetch(`/api/admin/keys/${id}`, { method: 'DELETE' })
+      await $fetch(`/api/admin/keys/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      })
       showToast('API key deleted')
       deletingEntry.value = null
       fetchApiKeys()
     } else {
-      await $fetch(`/api/admin/${type}/${id}`, { method: 'DELETE' })
+      await $fetch(`/api/admin/${type}/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      })
       showToast(`${type.toUpperCase()} entry deleted`)
       deletingEntry.value = null
       if (type === 'mcq') fetchMcq(mcqData.value.pagination.page)
       else fetchCode(codeData.value.pagination.page)
     }
     fetchStats()
-  } catch {
+  } catch (err) {
+    handleAuthError(err)
     showToast('Failed to delete entry', 'error')
   }
   deleting.value = false
@@ -418,8 +468,14 @@ watch(activeTab, (tab) => {
   else fetchCode(1)
 })
 
-// Initial load
+// Auth check + initial load
 onMounted(() => {
+  const token = localStorage.getItem('admin_token')
+  if (!token) {
+    navigateTo('/admin/login')
+    return
+  }
+  adminToken.value = token
   fetchStats()
   fetchApiKeys()
   fetchMcq(1)
@@ -446,6 +502,12 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .back-link {
@@ -503,6 +565,27 @@ onMounted(() => {
 .btn-icon:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  background: transparent;
+  border: 1px solid #222;
+  border-radius: 0.5rem;
+  color: #666;
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background: #1a0a0a;
+  border-color: #3a1a1a;
+  color: #f87171;
 }
 
 .spinning {
