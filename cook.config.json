@@ -1,0 +1,27 @@
+{
+    "name": "neoai.backend",
+    "author": "thenormvg",
+    "stir": true,
+    "cmd": {
+        "serve": [
+            "pnpm run dev"
+        ],
+        "build": [
+            "pnpm run build"
+        ],
+        "clean": [
+            "rm -rf node_modules"
+        ],
+        "install": [
+            "pnpm install"
+        ]
+    },
+    "template": {
+        "name": "",
+        "category": "",
+        "date": "",
+        "author": "",
+        "stack": [],
+        "github": ""
+    }
+}

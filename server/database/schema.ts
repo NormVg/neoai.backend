@@ -65,6 +65,10 @@ export const users = pgTable('users', {
   username: text('username').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  // Subscription from Dodo Payments: free | 2weeks | lifetime
+  plan: text('plan').default('free').notNull(),
+  // When plan expires (null = lifetime or free)
+  planExpiresAt: timestamp('plan_expires_at'),
 }, (table) => [
   index('users_username_idx').on(table.username),
 ])

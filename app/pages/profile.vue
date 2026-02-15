@@ -1,35 +1,44 @@
 <template>
   <div class="profile-page">
-    <div class="profile-card">
-      <div class="profile-header">
-        <NuxtLink to="/" class="back-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-        </NuxtLink>
-        <h1>Profile</h1>
-      </div>
-
-      <div class="info-section">
-        <div class="info-row">
-          <span class="info-label">Username</span>
-          <span class="info-value">{{ userInfo?.username || '—' }}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Member since</span>
-          <span class="info-value">{{ formattedDate }}</span>
-        </div>
-      </div>
-
-      <button class="logout-btn" @click="handleLogout">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-          <polyline points="16 17 21 12 16 7" />
-          <line x1="21" y1="12" x2="9" y2="12" />
+    <header class="page-header">
+      <NuxtLink to="/" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
         </svg>
-        Sign out
-      </button>
-    </div>
+        Home
+      </NuxtLink>
+      <NuxtLink to="/pricing" class="nav-link">Pricing</NuxtLink>
+    </header>
+
+    <main class="profile-main">
+      <div class="profile-content">
+        <h1 class="profile-title">Profile</h1>
+
+        <section class="info-section">
+          <div class="info-row">
+            <span class="info-label">Username</span>
+            <span class="info-value">{{ userInfo?.username || '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Member since</span>
+            <span class="info-value">{{ formattedDate }}</span>
+          </div>
+        </section>
+
+        <button class="logout-btn" @click="handleLogout">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          Sign out
+        </button>
+
+        <p class="support-line">
+          Support: <a href="mailto:support@neoai.projectkit.shop">support@neoai.projectkit.shop</a>
+        </p>
+      </div>
+    </main>
   </div>
 </template>
 
@@ -57,72 +66,72 @@ function handleLogout() {
 
 <style scoped>
 .profile-page {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  min-height: 100vh;
   background: #000;
-  z-index: 100;
 }
 
-.profile-card {
-  width: 100%;
-  max-width: 380px;
-  background: #0a0a0a;
-  border: 1px solid #1a1a1a;
-  border-radius: 0.75rem;
-  padding: 2rem;
-}
-
-.profile-header {
+.page-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #1a1a1a;
 }
 
-.back-link {
-  display: flex;
+.nav-link {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.375rem;
-  color: #666;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  color: #888;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 0.5rem;
   transition: all 0.2s;
 }
 
-.back-link:hover {
-  background: #111;
+.nav-link:hover {
   color: #fff;
+  background: #111;
 }
 
-.profile-header h1 {
-  font-size: 1.15rem;
+.profile-main {
+  padding: 2rem 1.5rem;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.profile-content {
+  text-align: left;
+}
+
+.profile-title {
+  font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
 }
 
-/* Info section */
 .info-section {
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  padding: 0 0 0.5rem 0;
+  border-bottom: 1px solid #1a1a1a;
 }
 
 .info-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.85rem 0;
+  padding: 0.75rem 0;
   border-bottom: 1px solid #1a1a1a;
 }
 
-.info-row:first-child {
-  border-top: 1px solid #1a1a1a;
+.info-row:last-child {
+  border-bottom: none;
 }
 
 .info-label {
@@ -159,5 +168,24 @@ function handleLogout() {
   background: #1a1a1a;
   color: #fff;
   border-color: #444;
+}
+
+.support-line {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #1a1a1a;
+  font-size: 0.75rem;
+  color: #555;
+  text-align: center;
+}
+
+.support-line a {
+  color: #888;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.support-line a:hover {
+  color: #fff;
 }
 </style>
