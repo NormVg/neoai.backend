@@ -29,6 +29,7 @@ export default defineEventHandler((event) => {
       }
     },
     onPaymentSucceeded: async (payload: any) => {
+      console.log('[dodo webhook] onPaymentSucceeded payload:', JSON.stringify(payload, null, 2))
       const metadata = payload?.metadata ?? {}
       const userId = metadata.user_id ?? metadata.userId
       const plan = (metadata.plan as string) ?? '2weeks'
