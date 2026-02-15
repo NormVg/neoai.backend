@@ -131,6 +131,7 @@ async function selectPlan(plan: '2weeks' | 'lifetime') {
     if (userInfo.value?.id) {
       body.metadata = { user_id: userInfo.value.id, plan }
     }
+    console.log('[Frontend Debug] Sending Checkout Payload:', JSON.stringify(body, null, 2))
     const res = await $fetch<{ checkout_url: string }>('/api/checkout', {
       method: 'POST',
       body,

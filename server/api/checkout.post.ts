@@ -8,10 +8,14 @@ export default defineEventHandler(async (event) => {
     private: { bearerToken, environment, returnUrl },
   } = useRuntimeConfig()
 
-  /*
   const body = await readBody(event)
-  console.log('[Checkout Debug] Body:', JSON.stringify(body, null, 2))
-  */
+  console.log('[Checkout Debug] Incoming Body:', JSON.stringify(body, null, 2))
+  console.log('[Checkout Debug] Config Check:', {
+    hasBearerToken: !!bearerToken,
+    environment,
+    returnUrl,
+  })
+
 
 
   const handler = checkoutHandler({
