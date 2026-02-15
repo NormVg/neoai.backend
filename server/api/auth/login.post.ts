@@ -61,6 +61,8 @@ export default defineEventHandler(async (event) => {
         id: user.id,
         username: user.username,
         createdAt: user.createdAt,
+        plan: user.plan,
+        planExpiresAt: user.planExpiresAt,
       },
     }
   } catch (error: any) {

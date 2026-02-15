@@ -77,6 +77,14 @@
         </div>
       </div>
 
+      <div v-if="successMsg" class="pricing-success">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+        {{ successMsg }}
+      </div>
+
       <p v-if="error" class="pricing-error">{{ error }}</p>
       <p v-if="!isLoggedIn && (productId2Weeks || productIdLifetime)" class="pricing-note">
         Sign in to purchase and link your plan to your account.
@@ -96,8 +104,20 @@
 <script setup lang="ts">
 const { userInfo, isLoggedIn, loadToken } = useUserAuth()
 const config = useRuntimeConfig()
+const route = useRoute()
 const loading = ref(false)
 const error = ref('')
+const successMsg = ref('')
+
+onMounted(() => {
+  if (route.query.success) {
+    successMsg.value = 'Payment successful! Your plan has been activated.'
+    // Clear query param to allow refreshing without re-triggering
+    const url = new URL(window.location.href)
+    url.searchParams.delete('success')
+    window.history.replaceState({}, '', url.toString())
+  }
+})
 
 const productId2Weeks = computed(() => (config.public as any).productId2Weeks || '')
 const productIdLifetime = computed(() => (config.public as any).productIdLifetime || '')
@@ -361,6 +381,21 @@ async function selectPlan(plan: '2weeks' | 'lifetime') {
   font-size: 0.85rem;
   color: #f87171;
   margin-bottom: 0.5rem;
+}
+
+.pricing-success {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .pricing-note {

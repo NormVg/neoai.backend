@@ -23,6 +23,14 @@
             <span class="info-label">Member since</span>
             <span class="info-value">{{ formattedDate }}</span>
           </div>
+          <div class="info-row">
+            <span class="info-label">Current Plan</span>
+            <span class="info-value plan-badge" :class="planClass">{{ planDisplay }}</span>
+          </div>
+          <div v-if="planExpires" class="info-row">
+            <span class="info-label">Expires On</span>
+            <span class="info-value">{{ planExpires }}</span>
+          </div>
         </section>
 
         <button class="logout-btn" @click="handleLogout">
@@ -45,13 +53,48 @@
 <script setup lang="ts">
 const { userInfo, clearToken, loadToken } = useUserAuth()
 
-onMounted(() => {
+onMounted(async () => {
   loadToken()
+  try {
+    // Refresh user data to get latest plan status
+    const data = await $fetch<any>('/api/auth/me')
+    if (data) {
+      // Update local state with fresh data
+      userInfo.value = {
+        ...userInfo.value!,
+        plan: data.plan,
+        planExpiresAt: data.planExpiresAt
+      }
+    }
+  } catch (e) {
+    // If auth fails, handleLogout will be called by user interaction or middleware
+  }
 })
 
 const formattedDate = computed(() => {
   if (!userInfo.value?.createdAt) return '—'
   return new Date(userInfo.value.createdAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+})
+
+const planDisplay = computed(() => {
+  const plan = userInfo.value?.plan
+  if (plan === 'lifetime') return 'Lifetime'
+  if (plan === '2weeks') return '2 Weeks'
+  return 'Free'
+})
+
+const planClass = computed(() => {
+  return userInfo.value?.plan === 'free' ? 'plan-free' : 'plan-paid'
+})
+
+const planExpires = computed(() => {
+  if (userInfo.value?.plan === 'lifetime') return 'Never'
+  if (!userInfo.value?.planExpiresAt) return null
+  return new Date(userInfo.value.planExpiresAt).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -187,5 +230,23 @@ function handleLogout() {
 
 .support-line a:hover {
   color: #fff;
+}
+
+.plan-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.plan-free {
+  background: #1a1a1a;
+  color: #888;
+}
+
+.plan-paid {
+  background: #fff;
+  color: #000;
 }
 </style>

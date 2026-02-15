@@ -1,8 +1,8 @@
 export const useUserAuth = () => {
   const token = useState<string | null>('user_token', () => null)
-  const userInfo = useState<{ id: string; username: string; createdAt: string } | null>('user_info', () => null)
+  const userInfo = useState<{ id: string; username: string; createdAt: string; plan?: string; planExpiresAt?: string | null } | null>('user_info', () => null)
 
-  function setToken(t: string, user: { id: string; username: string; createdAt: string }) {
+  function setToken(t: string, user: { id: string; username: string; createdAt: string; plan?: string; planExpiresAt?: string | null }) {
     token.value = t
     userInfo.value = user
     if (import.meta.client) {
