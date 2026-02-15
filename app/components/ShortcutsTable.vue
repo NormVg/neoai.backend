@@ -12,18 +12,18 @@
       <tbody>
         <tr>
           <td>Instant Solve</td>
-          <td><code>&#8963;+Shift+.</code></td>
+          <td><code>&#8997;+Shift+.</code></td>
           <td><code>Ctrl+Shift+.</code></td>
         </tr>
         <tr>
           <td>Human Typing</td>
-          <td><code>&#8963;+Shift+,</code></td>
+          <td><code>&#8997;+Shift+,</code></td>
           <td><code>Ctrl+Shift+,</code></td>
         </tr>
         <tr>
-          <td>Pause/Resume</td>
-          <td><code>&#8963;+Shift+/</code></td>
-          <td><code>Ctrl+Shift+/</code></td>
+          <td>Custom Paste</td>
+          <td><code>&#8997;+Shift+V</code></td>
+          <td><code>Alt+Shift+V</code></td>
         </tr>
       </tbody>
     </table>
