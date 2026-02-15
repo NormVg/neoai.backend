@@ -33,6 +33,7 @@
               <span class="amount">100</span>
             </div>
             <p class="plan-desc">Full access for 14 days</p>
+            <div v-if="userInfo?.plan === '2weeks'" class="current-plan-badge">Current Plan</div>
           </div>
           <ul class="plan-features">
             <li>Instant solve & human typing</li>
@@ -40,12 +41,8 @@
             <li>All keyboard shortcuts</li>
             <li>Email support</li>
           </ul>
-          <button
-            type="button"
-            class="plan-cta outline"
-            :disabled="loading || !productId2Weeks || !isLoggedIn"
-            @click="selectPlan('2weeks')"
-          >
+          <button type="button" class="plan-cta outline" :disabled="loading || !productId2Weeks || !isLoggedIn"
+            @click="selectPlan('2weeks')">
             {{ loading ? 'Redirecting…' : 'Get 2 weeks' }}
           </button>
         </div>
@@ -59,6 +56,7 @@
               <span class="amount">555</span>
             </div>
             <p class="plan-desc">One-time payment, use forever</p>
+            <div v-if="userInfo?.plan === 'lifetime'" class="current-plan-badge">Current Plan</div>
           </div>
           <ul class="plan-features">
             <li>Everything in 2 Weeks</li>
@@ -66,12 +64,8 @@
             <li>Future updates included</li>
             <li>Priority support</li>
           </ul>
-          <button
-            type="button"
-            class="plan-cta primary"
-            :disabled="loading || !productIdLifetime || !isLoggedIn"
-            @click="selectPlan('lifetime')"
-          >
+          <button type="button" class="plan-cta primary" :disabled="loading || !productIdLifetime || !isLoggedIn"
+            @click="selectPlan('lifetime')">
             {{ loading ? 'Redirecting…' : 'Get lifetime' }}
           </button>
         </div>
@@ -419,5 +413,18 @@ async function selectPlan(plan: '2weeks' | 'lifetime') {
 
 .support-line a:hover {
   color: #fff;
+}
+
+.current-plan-badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>
