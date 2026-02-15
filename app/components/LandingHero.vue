@@ -24,11 +24,8 @@
     <p class="tagline">Get the Chrome extension and use shortcuts on iamneo.</p>
 
     <div class="actions">
-      <a
-        href="https://github.com/NormVg/neoai.ext/releases/download/asd/neoai.ext.zip"
-        class="btn btn-download"
-        download
-      >
+      <a v-if="hasActivePlan" href="https://github.com/NormVg/neoai.ext/releases/download/asd/neoai.ext.zip"
+        class="btn btn-download" download>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
           <polyline points="7 10 12 15 17 10" />
@@ -36,6 +33,12 @@
         </svg>
         Download extension
       </a>
+      <NuxtLink v-else to="/pricing" class="btn btn-download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v20M2 12h20" />
+        </svg>
+        Get Access
+      </NuxtLink>
       <TestButton />
     </div>
 
@@ -53,6 +56,11 @@ onMounted(() => {
 })
 
 const username = computed(() => userInfo.value?.username || 'Profile')
+
+const hasActivePlan = computed(() => {
+  const plan = userInfo.value?.plan
+  return plan === '2weeks' || plan === 'lifetime'
+})
 </script>
 
 <style scoped>
