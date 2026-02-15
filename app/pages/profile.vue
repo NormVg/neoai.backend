@@ -51,14 +51,16 @@
 </template>
 
 <script setup lang="ts">
-const { userInfo, clearToken, loadToken } = useUserAuth()
+const { userInfo, clearToken, loadToken, getAuthHeaders } = useUserAuth()
 
 onMounted(async () => {
   loadToken()
   try {
     // Refresh user data to get latest plan status
-    const data = await $fetch<any>('/api/auth/me')
-    console.log('[Profile] /api/auth/me response:', data)
+    const data = await $fetch<any>('/api/auth/me', {
+      headers: getAuthHeaders(),
+    })
+    // console.log('[Profile] /api/auth/me response:', data)
     if (data) {
       // Update local state with fresh data
       userInfo.value = {
