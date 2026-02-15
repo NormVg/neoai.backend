@@ -69,6 +69,11 @@ export const users = pgTable('users', {
   plan: text('plan').default('free').notNull(),
   // When plan expires (null = lifetime or free)
   planExpiresAt: timestamp('plan_expires_at'),
+
+  // Usage Quota
+  requestCount: integer('request_count').default(0).notNull(),
+  quotaResetAt: timestamp('quota_reset_at').defaultNow().notNull(),
+  quotaLimit: integer('quota_limit').default(50).notNull(), // Configurable per user
 }, (table) => [
   index('users_username_idx').on(table.username),
 ])

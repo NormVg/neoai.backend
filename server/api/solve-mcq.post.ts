@@ -4,6 +4,7 @@ import { stripMarkdown, extractJSON } from '~~/server/utils/ai/markdown'
 import { generateMCQCacheKey, lookupMCQCache, saveMCQCache } from '~~/server/utils/ai/cache'
 import { buildMCQPrompt, MCQ_SYSTEM_PROMPT } from '~~/server/utils/prompts/mcq'
 import { extractToken, verifyToken } from '~~/server/utils/auth/jwt'
+import { verifyPlanAccess, checkAndIncrementUsage } from '~~/server/utils/usage'
 
 /**
  * POST /api/solve-mcq
@@ -15,13 +16,14 @@ export default defineEventHandler(async (event) => {
   try {
     // Auth gate — require valid user token
     const token = extractToken(event)
-    if (!token) {
-      throw createError({ statusCode: 401, message: 'Authentication required' })
-    }
+    if (!token) throw createError({ statusCode: 401, message: 'Authentication required' })
+
     const payload = await verifyToken(token)
-    if (!payload) {
-      throw createError({ statusCode: 401, message: 'Invalid or expired token' })
-    }
+    if (!payload) throw createError({ statusCode: 401, message: 'Invalid or expired token' })
+
+    // Plan & Quota Check
+    await verifyPlanAccess(payload.sub)
+    await checkAndIncrementUsage(payload.sub)
 
     const body = await readBody(event)
     const { question, options, code } = body
