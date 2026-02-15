@@ -115,12 +115,12 @@ async function selectPlan(plan: '2weeks' | 'lifetime') {
   error.value = ''
   loading.value = true
   try {
-    const customer: Record<string, string> = {
-      name: userInfo.value?.username || 'Customer',
-    }
+    const username = userInfo.value?.username || 'Customer'
     const email = (userInfo.value as any)?.email
-    if (email) {
-      customer.email = email
+
+    const customer: Record<string, string> = {
+      name: username,
+      email: email || `${username}@demo.neoai.projectkit.shop`,
     }
 
     const body: Record<string, unknown> = {
@@ -131,7 +131,8 @@ async function selectPlan(plan: '2weeks' | 'lifetime') {
     if (userInfo.value?.id) {
       body.metadata = { user_id: userInfo.value.id, plan }
     }
-    console.log('[Frontend Debug] Sending Checkout Payload:', JSON.stringify(body, null, 2))
+
+    // console.log('[Frontend Debug] Sending Checkout Payload:', JSON.stringify(body, null, 2))
     const res = await $fetch<{ checkout_url: string }>('/api/checkout', {
       method: 'POST',
       body,
