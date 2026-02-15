@@ -115,10 +115,14 @@ async function selectPlan(plan: '2weeks' | 'lifetime') {
   error.value = ''
   loading.value = true
   try {
-    const customer = {
-      email: (userInfo.value as any)?.email || '',
+    const customer: Record<string, string> = {
       name: userInfo.value?.username || 'Customer',
     }
+    const email = (userInfo.value as any)?.email
+    if (email) {
+      customer.email = email
+    }
+
     const body: Record<string, unknown> = {
       product_cart: [{ product_id: productId, quantity: 1 }],
       customer,
