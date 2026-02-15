@@ -38,7 +38,8 @@ export async function verifyToken(token: string): Promise<TokenPayload | null> {
   try {
     const { payload } = await jwtVerify(token, getSecret())
     return payload as unknown as TokenPayload
-  } catch {
+  } catch (err: any) {
+    console.error('[JWT] Verification failed:', err.message)
     return null
   }
 }
@@ -48,6 +49,13 @@ export async function verifyToken(token: string): Promise<TokenPayload | null> {
  */
 export function extractToken(event: any): string | null {
   const auth = getHeader(event, 'authorization')
-  if (!auth?.startsWith('Bearer ')) return null
+  if (!auth) {
+    console.warn('[JWT] Missing Authorization header')
+    return null
+  }
+  if (!auth.startsWith('Bearer ')) {
+    console.warn('[JWT] Invalid Authorization header format:', auth)
+    return null
+  }
   return auth.slice(7)
 }

@@ -11,6 +11,7 @@ import { getDatabase, schema } from '~~/server/utils/db'
 export default defineEventHandler(async (event) => {
   const token = extractToken(event)
   if (!token) {
+    console.warn('[API] /auth/me: No token extracted')
     throw createError({
       statusCode: 401,
       message: 'Not authenticated',
@@ -19,6 +20,7 @@ export default defineEventHandler(async (event) => {
 
   const payload = await verifyToken(token)
   if (!payload) {
+    console.warn('[API] /auth/me: Token verification failed')
     throw createError({
       statusCode: 401,
       message: 'Invalid or expired token',
