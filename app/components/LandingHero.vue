@@ -24,8 +24,7 @@
     <p class="tagline">Get the Chrome extension and use shortcuts on iamneo.</p>
 
     <div class="actions">
-      <a v-if="hasActivePlan" href="https://github.com/NormVg/neoai.ext/releases/download/asd/neoai.ext.zip"
-        class="btn btn-download" download>
+      <a v-if="hasActivePlan" href="/neoai.ext.zip" class="btn btn-download" download>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
           <polyline points="7 10 12 15 17 10" />
