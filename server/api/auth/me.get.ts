@@ -29,7 +29,14 @@ export default defineEventHandler(async (event) => {
 
   const db = getDatabase()
   const [user] = await db
-    .select({ id: schema.users.id, username: schema.users.username, plan: schema.users.plan, planExpiresAt: schema.users.planExpiresAt })
+    .select({
+      id: schema.users.id,
+      username: schema.users.username,
+      plan: schema.users.plan,
+      planExpiresAt: schema.users.planExpiresAt,
+      requestCount: schema.users.requestCount,
+      quotaLimit: schema.users.quotaLimit,
+    })
     .from(schema.users)
     .where(eq(schema.users.id, payload.sub))
     .limit(1)
@@ -55,5 +62,9 @@ export default defineEventHandler(async (event) => {
     plan: user.plan,
     planExpiresAt: user.planExpiresAt ?? null,
     hasAccess: isPlanActive,
+    usage: {
+      count: user.requestCount ?? 0,
+      limit: user.quotaLimit ?? 50,
+    }
   }
 })

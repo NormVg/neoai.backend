@@ -31,6 +31,10 @@
             <span class="info-label">Expires On</span>
             <span class="info-value">{{ planExpires }}</span>
           </div>
+          <div class="info-row">
+            <span class="info-label">Usage (14 Days)</span>
+            <span class="info-value">{{ usageDisplay }}</span>
+          </div>
         </section>
 
         <button class="logout-btn" @click="handleLogout">
@@ -66,7 +70,8 @@ onMounted(async () => {
       userInfo.value = {
         ...userInfo.value!,
         plan: data.plan,
-        planExpiresAt: data.planExpiresAt
+        planExpiresAt: data.planExpiresAt,
+        usage: data.usage
       }
     }
   } catch (e) {
@@ -102,6 +107,12 @@ const planExpires = computed(() => {
     month: 'long',
     day: 'numeric',
   })
+})
+
+const usageDisplay = computed(() => {
+  const usage = userInfo.value?.usage
+  if (!usage) return '—'
+  return `${usage.count} / ${usage.limit} requests`
 })
 
 function handleLogout() {
