@@ -29,7 +29,6 @@ export default defineEventHandler((event) => {
       }
     },
     onPaymentSucceeded: async (payload: any) => {
-      // console.log('[dodo webhook] onPaymentSucceeded payload:', JSON.stringify(payload, null, 2))
       const metadata = payload?.data?.metadata ?? payload?.metadata ?? {}
       const userId = metadata.user_id ?? metadata.userId
       const plan = (metadata.plan as string) ?? '2weeks'
@@ -58,33 +57,12 @@ export default defineEventHandler((event) => {
       const metadata = payload?.data?.metadata ?? payload?.metadata ?? {}
       const userId = metadata.user_id ?? metadata.userId
       const plan = (metadata.plan as string) ?? '2weeks'
-      if (!userId) return
 
       if (!userId) {
-        console.warn('[dodo webhook] payment_succeeded: no user_id in metadata', payload?.id)
+        console.warn('[dodo webhook] subscription_active: no user_id in metadata', payload?.id)
         return
       }
 
-      const planExpiresAt = getPlanExpiresAt(plan)
-      const db = getDatabase()
-      try {
-        await db
-          .update(schema.users)
-          .set({
-            plan: plan === 'lifetime' ? 'lifetime' : '2weeks',
-            planExpiresAt: planExpiresAt ?? null,
-          })
-          .where(eq(schema.users.id, userId))
-        console.log('[dodo webhook] payment_succeeded: updated user', userId, 'plan', plan)
-      } catch (err) {
-        console.error('[dodo webhook] payment_succeeded: failed to update user', userId, err)
-      }
-    },
-    onSubscriptionActive: async (payload: any) => {
-      const metadata = payload?.metadata ?? {}
-      const userId = metadata.user_id ?? metadata.userId
-      const plan = (metadata.plan as string) ?? '2weeks'
-      if (!userId) return
       const planExpiresAt = getPlanExpiresAt(plan)
       const db = getDatabase()
       try {
