@@ -44,6 +44,8 @@ export default defineEventHandler(async (event) => {
     user.plan === 'lifetime' ||
     (user.plan !== 'free' && user.planExpiresAt && new Date(user.planExpiresAt) > now)
 
+  console.log('[API] /auth/me user:', user.username, 'plan:', user.plan, 'expires:', user.planExpiresAt)
+
   return {
     id: user.id,
     role: payload.role,

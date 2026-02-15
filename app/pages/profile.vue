@@ -58,6 +58,7 @@ onMounted(async () => {
   try {
     // Refresh user data to get latest plan status
     const data = await $fetch<any>('/api/auth/me')
+    console.log('[Profile] /api/auth/me response:', data)
     if (data) {
       // Update local state with fresh data
       userInfo.value = {
