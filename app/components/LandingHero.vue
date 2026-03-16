@@ -54,6 +54,13 @@ const hasActivePlan = ref(false)
 
 onMounted(async () => {
   loadToken()
+
+  // Set initial state from cached storage immediately to avoid flicker
+  if (userInfo.value?.plan === '2weeks' || userInfo.value?.plan === 'lifetime') {
+    const expired = userInfo.value.planExpiresAt && new Date(userInfo.value.planExpiresAt) < new Date()
+    if (!expired) hasActivePlan.value = true
+  }
+
   try {
     const data = await $fetch<any>('/api/auth/me', {
       headers: getAuthHeaders(),
@@ -68,7 +75,7 @@ onMounted(async () => {
       hasActivePlan.value = !!data.hasAccess
     }
   } catch {
-    // Not logged in or token invalid — keep hasActivePlan false
+    hasActivePlan.value = false
   }
 })
 
