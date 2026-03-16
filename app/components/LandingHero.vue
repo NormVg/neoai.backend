@@ -48,18 +48,31 @@
 </template>
 
 <script setup lang="ts">
-const { userInfo, isLoggedIn, loadToken } = useUserAuth()
+const { userInfo, isLoggedIn, loadToken, getAuthHeaders } = useUserAuth()
 
-onMounted(() => {
+const hasActivePlan = ref(false)
+
+onMounted(async () => {
   loadToken()
+  try {
+    const data = await $fetch<any>('/api/auth/me', {
+      headers: getAuthHeaders(),
+    })
+    if (data) {
+      userInfo.value = {
+        ...userInfo.value!,
+        plan: data.plan,
+        planExpiresAt: data.planExpiresAt,
+        usage: data.usage,
+      }
+      hasActivePlan.value = !!data.hasAccess
+    }
+  } catch {
+    // Not logged in or token invalid — keep hasActivePlan false
+  }
 })
 
 const username = computed(() => userInfo.value?.username || 'Profile')
-
-const hasActivePlan = computed(() => {
-  const plan = userInfo.value?.plan
-  return plan === '2weeks' || plan === 'lifetime'
-})
 </script>
 
 <style scoped>
