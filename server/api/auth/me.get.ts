@@ -49,11 +49,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const now = new Date()
-  const isPlanActive =
-    user.plan === 'lifetime' ||
-    (user.plan !== 'free' && user.planExpiresAt && new Date(user.planExpiresAt) > now)
 
-  console.log('[API] /auth/me user:', user.username, 'plan:', user.plan, 'expires:', user.planExpiresAt)
+  // If plan is not free, assume active UNLESS there is an expiration date that has passed
+  const isExpired = user.planExpiresAt && new Date(user.planExpiresAt) < now
+  const isPlanActive = user.plan === 'lifetime' || (user.plan !== 'free' && !isExpired)
+
+  console.log('[API] /auth/me user:', user.username, 'plan:', user.plan, 'expires:', user.planExpiresAt, 'isPlanActive:', isPlanActive)
 
   return {
     id: user.id,
